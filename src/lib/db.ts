@@ -25,6 +25,7 @@ export async function connectDB(): Promise<typeof mongoose> {
   })
 
   cached.conn = await cached.promise
+
   return cached.conn
 }
 
@@ -34,6 +35,7 @@ const globalForMongoClient = globalThis as unknown as {
 
 async function createClientPromise(): Promise<MongoClient> {
   const client = new MongoClient(MONGODB_URI)
+
   try {
     return await client.connect()
   } catch (err) {

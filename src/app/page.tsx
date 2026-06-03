@@ -8,7 +8,7 @@ import Card from '@/components/ui/Card'
 export default async function HomePage() {
   const session = await auth()
   const name = session?.user?.name
-  console.log({ name })
+
   return (
     <main className="flex min-h-screen items-center justify-center p-4">
       <Card>

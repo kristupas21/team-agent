@@ -15,6 +15,7 @@ export async function signUpAction(input: {
   password: string
 }): Promise<SignUpResult> {
   const parsed = signUpSchema.safeParse(input)
+
   if (!parsed.success) {
     return { success: false, error: GENERIC_ERROR }
   }
@@ -28,18 +29,16 @@ export async function signUpAction(input: {
     if (isDuplicateKeyError(err)) {
       return { success: false, error: DUPLICATE_ERROR }
     }
+
     return { success: false, error: GENERIC_ERROR }
   }
 
   // signIn throws NEXT_REDIRECT — do NOT wrap in try/catch.
   await signIn('credentials', { name, password, redirectTo: '/' })
+
   return { success: true }
 }
 
 function isDuplicateKeyError(err: unknown): boolean {
-  return (
-    err instanceof Error &&
-    'code' in err &&
-    (err as { code?: unknown }).code === 11000
-  )
+  return err instanceof Error && 'code' in err && (err as { code?: unknown }).code === 11000
 }

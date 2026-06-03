@@ -13,6 +13,7 @@ export async function signInAction(input: {
   password: string
 }): Promise<SignInResult> {
   const parsed = signInSchema.safeParse(input)
+
   if (!parsed.success) {
     return { success: false, error: GENERIC_ERROR }
   }
@@ -20,6 +21,7 @@ export async function signInAction(input: {
   try {
     if ((await countUsers()) === 0) {
       console.info('[signIn] no admin user — seed required')
+
       return { success: false, error: GENERIC_ERROR }
     }
 
@@ -28,6 +30,7 @@ export async function signInAction(input: {
       password: parsed.data.password,
       redirect: false,
     })
+
     return { success: true }
   } catch {
     return { success: false, error: GENERIC_ERROR }

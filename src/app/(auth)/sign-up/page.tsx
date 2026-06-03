@@ -10,6 +10,7 @@ export const metadata: Metadata = {
 
 export default async function SignUpPage() {
   const session = await auth()
+
   if (session?.user) {
     redirect('/')
   }

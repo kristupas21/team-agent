@@ -14,7 +14,9 @@ export default function SignUpForm() {
 
   const onValid = async (data: SignUpInput): Promise<void> => {
     clearErrors('root')
+
     const result = await signUpAction(data)
+
     if (!result.success) {
       setError('root', { message: result.error })
     }

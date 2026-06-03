@@ -11,12 +11,14 @@ async function main(): Promise<void> {
   await connectDB()
 
   const existing = await UserModel.findOne({ name }).lean().exec()
+
   if (existing) {
     console.info(`[seed-admin] admin user '${name}' already exists — skipping`)
     return
   }
 
   await UserModel.create({ name, passwordHash: await hashPassword(password) })
+
   console.info(`[seed-admin] created admin user '${name}'`)
 }
 

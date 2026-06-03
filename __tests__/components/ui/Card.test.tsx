@@ -5,12 +5,15 @@ import Card from '@/components/ui/Card'
 describe('Card', () => {
   it('renders children', () => {
     render(<Card>hello card</Card>)
+
     expect(screen.getByText('hello card')).toBeInTheDocument()
   })
 
   it('applies the base class set to its root element', () => {
     render(<Card data-testid="card">content</Card>)
+
     const root = screen.getByTestId('card')
+
     expect(root).toHaveClass('w-full')
     expect(root).toHaveClass('rounded-lg')
     expect(root).toHaveClass('border')
@@ -26,7 +29,9 @@ describe('Card', () => {
         x
       </Card>
     )
+
     const root = screen.getByTestId('card')
+
     expect(root).toHaveClass('extra-class')
     expect(root).toHaveClass('bg-white')
   })

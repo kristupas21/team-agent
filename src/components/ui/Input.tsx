@@ -26,6 +26,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   ref
 ) {
   const effectiveVariant: InputVariant = error ? 'danger' : variant
+
   return (
     <>
       <input

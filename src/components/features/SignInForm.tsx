@@ -10,17 +10,21 @@ import Input from '@/components/ui/Input'
 
 export default function SignInForm() {
   const router = useRouter()
+
   const { register, handleSubmit, formState, setError, clearErrors } = useForm<SignInInput>({
     resolver: zodResolver(signInSchema),
   })
 
   const onValid = async (data: SignInInput): Promise<void> => {
     clearErrors('root')
+
     const result = await signInAction(data)
+
     if (result.success) {
       router.push('/')
       return
     }
+
     setError('root', { message: result.error })
   }
 

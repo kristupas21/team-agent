@@ -18,11 +18,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
       authorize: async (raw) => {
         const parsed = signInSchema.safeParse(raw)
+
         if (!parsed.success) return null
+
         const user = await findUserByName(parsed.data.name)
+
         if (!user) return null
+
         const ok = await verifyPassword(parsed.data.password, user.passwordHash)
+
         if (!ok) return null
+
         return { id: user.name, name: user.name }
       },
     }),
@@ -32,12 +38,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user?.name) {
         token.name = user.name
       }
+
       return token
     },
     session: async ({ session, token }) => {
       if (token.name) {
         session.user.name = token.name
       }
+
       return session
     },
   },

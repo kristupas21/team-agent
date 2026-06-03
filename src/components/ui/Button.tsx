@@ -20,6 +20,7 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const isDisabled = disabled || loading
+
   return (
     <button
       className={buttonClass(variant, className)}

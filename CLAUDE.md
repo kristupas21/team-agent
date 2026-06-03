@@ -60,6 +60,81 @@ Next.js application using the App Router. All new development follows App Router
 
 ---
 
+## Code Layout — Visual Rhythm Inside Function Bodies
+
+Treat each function body as a sequence of *steps*. A step is one or more statements that together perform one logical operation (set up locals, perform a side-effect, evaluate a guard, produce a return, handle an error). Separate adjacent steps with **exactly one blank line**. Consecutive statements that belong to the same step stay together — no blank between them.
+
+### Insert a blank line between
+- A `const` / `let` declaration and the next statement of a different kind.
+- An `await` call and the next statement of a different kind.
+- An `if` / `try` / `for` / `while` / `switch` block and the statements before and after it.
+- A `return` that produces a non-trivial value (object literal, JSX, expression) and the statement before it.
+- Inside a block, between the block's setup statements and its `return` (when both exist).
+
+### Keep together (no blank between)
+- Consecutive `const` / `let` declarations that are joint setup (e.g. several locals fetched up front before any side-effect runs; multiple `vi.fn()` / `userEvent.setup()` lines at the top of a test).
+- Consecutive `expect(...)` assertions that cover a single behaviour.
+- `console.error(...)` immediately followed by `throw` (log-then-throw idiom in a catch).
+- `console.info(...)` immediately followed by a bare `return;` (log-then-exit idiom inside a short guard).
+- A single-statement guard like `if (!user) return null` — no internal blank needed; treat the whole line as one step.
+
+### Examples
+
+```ts
+// Function body with three steps, one blank line between each.
+export function requireEnv(name: string): string {
+  const value = process.env[name]
+
+  if (!value) {
+    throw new Error(`${name} is not set. Add it to .env.local.`)
+  }
+
+  return value
+}
+```
+
+```ts
+// Tightly coupled error pair — no blank between.
+async function createClientPromise(): Promise<MongoClient> {
+  const client = new MongoClient(MONGODB_URI)
+
+  try {
+    return await client.connect()
+  } catch (err) {
+    console.error('[db] MongoDB connection error:', err)
+    throw err
+  }
+}
+```
+
+```tsx
+// Test bodies: setup constants together, then a blank, then the action, then a blank,
+// then the lookup, then a blank, then grouped assertions.
+it('is disabled and does not fire onClick when disabled is true', async () => {
+  const user = userEvent.setup()
+  const onClick = vi.fn()
+
+  render(
+    <Button disabled onClick={onClick}>
+      Disabled
+    </Button>
+  )
+
+  const button = screen.getByRole('button')
+
+  expect(button).toBeDisabled()
+  expect(button).toHaveClass('disabled:opacity-60')
+
+  await user.click(button)
+
+  expect(onClick).not.toHaveBeenCalled()
+})
+```
+
+A short function with a single statement does not need internal blank lines — only insert them when there are distinct steps to separate.
+
+---
+
 ## Component Rules
 
 ### Server vs Client
