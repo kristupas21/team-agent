@@ -18,7 +18,7 @@ describe('Card', () => {
     expect(root).toHaveClass('rounded-lg')
     expect(root).toHaveClass('border')
     expect(root).toHaveClass('border-neutral-200')
-    expect(root).toHaveClass('bg-white')
+    expect(root).toHaveClass('bg-neutral-100')
     expect(root).toHaveClass('p-6')
     expect(root).toHaveClass('md:max-w-md')
   })
@@ -33,6 +33,6 @@ describe('Card', () => {
     const root = screen.getByTestId('card')
 
     expect(root).toHaveClass('extra-class')
-    expect(root).toHaveClass('bg-white')
+    expect(root).toHaveClass('bg-neutral-100')
   })
 })

@@ -5,9 +5,11 @@ import { buttonClass, type ButtonVariant } from './buttonClass'
 
 export type ButtonProps = Readonly<
   Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> & {
-    children: ReactNode
+    children?: ReactNode
     variant?: ButtonVariant
     loading?: boolean
+    leftIcon?: ReactNode
+    rightIcon?: ReactNode
   }
 >
 
@@ -16,6 +18,8 @@ export default function Button({
   variant = 'primary',
   loading = false,
   disabled,
+  leftIcon,
+  rightIcon,
   className,
   ...props
 }: ButtonProps) {
@@ -28,7 +32,15 @@ export default function Button({
       aria-busy={loading || undefined}
       {...props}
     >
-      {loading ? 'Loading...' : children}
+      {loading ? (
+        'Loading...'
+      ) : (
+        <>
+          {leftIcon}
+          {children}
+          {rightIcon}
+        </>
+      )}
     </button>
   )
 }

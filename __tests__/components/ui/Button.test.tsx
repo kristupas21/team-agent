@@ -90,4 +90,50 @@ describe('Button', () => {
 
     expect(onClick).toHaveBeenCalledTimes(1)
   })
+
+  it('renders leftIcon as the first child of the button', () => {
+    render(<Button leftIcon={<svg data-testid="left-icon" />}>Click</Button>)
+
+    const button = screen.getByRole('button')
+    const icon = screen.getByTestId('left-icon')
+
+    expect(button.firstChild).toBe(icon)
+    expect(button).toHaveTextContent('Click')
+  })
+
+  it('renders rightIcon as the last child of the button', () => {
+    render(<Button rightIcon={<svg data-testid="right-icon" />}>Continue</Button>)
+
+    const button = screen.getByRole('button')
+    const icon = screen.getByTestId('right-icon')
+
+    expect(button.lastChild).toBe(icon)
+    expect(button).toHaveTextContent('Continue')
+  })
+
+  it('renders an icon-only button (no children) with an aria-label', () => {
+    render(<Button aria-label="Back" leftIcon={<svg data-testid="only-icon" />} />)
+
+    const button = screen.getByRole('button', { name: 'Back' })
+
+    expect(button).toBeInTheDocument()
+    expect(screen.getByTestId('only-icon')).toBeInTheDocument()
+  })
+
+  it('hides both icons and shows "Loading..." when loading is true', () => {
+    render(
+      <Button
+        loading
+        leftIcon={<svg data-testid="left-icon" />}
+        rightIcon={<svg data-testid="right-icon" />}
+      >
+        Submit
+      </Button>
+    )
+
+    expect(screen.getByRole('button')).toHaveTextContent('Loading...')
+    expect(screen.queryByTestId('left-icon')).toBeNull()
+    expect(screen.queryByTestId('right-icon')).toBeNull()
+    expect(screen.queryByText('Submit')).toBeNull()
+  })
 })
