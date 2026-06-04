@@ -42,6 +42,7 @@ You are a reviewer agent. Your job is to verify that what was built matches what
 - Tests cover all acceptance criteria?
 - Error and empty states tested?
 - No tests that only test implementation details?
+- **Mandatory categories must be covered.** If a server action, validation schema, middleware module, or predicate wrapping a framework error lands in the diff without a corresponding unit test in the same task, that's a Blocker. The mandatory categories are listed in `CLAUDE.md` → Testing Rules → Categories that require tests.
 
 ## Rules
 - Do NOT fix any issues — document them only

@@ -1,6 +1,7 @@
 'use server'
 
 import { signIn } from '@/lib/auth'
+import { isDuplicateKeyError } from '@/lib/errors'
 import { hashPassword } from '@/lib/password'
 import { createUser } from '@/lib/users'
 import { signUpSchema } from '@/lib/validation/signUp'
@@ -34,11 +35,7 @@ export async function signUpAction(input: {
   }
 
   // signIn throws NEXT_REDIRECT — do NOT wrap in try/catch.
-  await signIn('credentials', { name, password, redirectTo: '/' })
+  await signIn('credentials', { name, password, redirectTo: '/dashboard' })
 
   return { success: true }
-}
-
-function isDuplicateKeyError(err: unknown): boolean {
-  return err instanceof Error && 'code' in err && (err as { code?: unknown }).code === 11000
 }

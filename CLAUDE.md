@@ -177,6 +177,14 @@ Always prefer the Next.js / React 19 idiom over a bare HTML or manual JavaScript
 - The directive lives at the *deepest* component that still owns the interactivity — not on a wrapper, not on the page.
 - **Plain JS helpers that need to be callable from both server and client components must live in their own module, *without* a `'use client'` directive.** Importing a regular function from a `'use client'` module into a server component makes Next.js treat the function as a client-only reference; calling it during SSR throws `Attempted to call X() from the server but X is on the client`. `tsc --noEmit`, `npm run lint`, and `npx next build` do NOT catch this — only an actual dev-server request does. Pattern: when an interactive component (`Foo.tsx`, `'use client'`) wants to also expose a class-name helper, variant map, or constant for server components to consume, extract it to a sibling module (`foo-helpers.ts`, no directive) and import from there in both places.
 
+### Middleware (Edge runtime)
+- **`middleware.ts` lives at `src/middleware.ts`** because this project uses a `src/` layout. A `middleware.ts` at the *project root* will silently NOT be picked up by Next.js when `src/app` exists.
+- **Middleware runs in the Edge runtime, not Node.js.** Any module imported transitively into `src/middleware.ts` must be Edge-compatible. Mongoose, the MongoDB driver, `bcryptjs`, `fs`, raw `crypto`, and anything Node-only will fail at runtime with `The edge runtime does not support Node.js 'X' module`. `tsc` and `next build` do NOT catch this — only an actual dev-server request hitting a middleware-protected route surfaces it.
+- **Auth.js v5 with a database adapter requires the split-config pattern.** Keep two files:
+  - `src/lib/auth.config.ts` — edge-safe: `session: { strategy: 'jwt' }`, the `jwt` and `session` callbacks (token-only, no DB calls), and `providers: []`. Exports a typed `authConfig`.
+  - `src/lib/auth.ts` — full setup: imports `authConfig`, spreads it into `NextAuth({ ...authConfig, adapter: MongoDBAdapter(clientPromise), providers: [Credentials({ authorize: async (raw) => { ...DB-touching code... } })] })`. Used by server components, route handlers, and server actions.
+  - `src/middleware.ts` — imports `authConfig` only (NOT `auth` from `src/lib/auth.ts`), then `const { auth } = NextAuth(authConfig)` locally. This isolates the edge bundle from Node-only modules.
+
 ### Forms and mutations
 - Forms that mutate server state use **server actions**, bound either as `<form action={serverAction}>` (progressive enhancement — works without JS) or invoked from a client component with `useTransition`.
 - For form result/error state, prefer `useActionState` (React 19) when the form is purely server-driven. Use manual `useState` only when client-side validation runs before the server call (e.g. a shared Zod schema).
@@ -256,37 +264,52 @@ Always prefer the Next.js / React 19 idiom over a bare HTML or manual JavaScript
 
 ## Testing Rules
 
+Unit tests are the default coverage mechanism for any logic that is prone to runtime-only failure. Static checks (`tsc`, `npm run lint`, `npx next build`) catch syntactic and type errors; tests catch behaviour. Three classes of bugs that recently slipped past static checks motivate the policy:
+1. A server action's broad `try/catch` swallowing a `NEXT_REDIRECT` thrown by Auth.js.
+2. Middleware silently absent because of a layout mismatch (`src/middleware.ts` vs `middleware.ts`).
+3. Edge-runtime imports dragging Node-only modules into the middleware bundle.
+
 ### Stack
-- **Unit/component tests**: Vitest + React Testing Library + `@testing-library/jest-dom`
-- **Mocking**: Vitest built-ins (`vi.fn()`, `vi.mock()`)
+- **Test runner**: Vitest
+- **Component testing**: React Testing Library (`@testing-library/react`)
+- **DOM matchers**: `@testing-library/jest-dom`
+- **User interactions**: `@testing-library/user-event`
+- **Mocking**: Vitest built-ins (`vi.fn()`, `vi.mock()`, `vi.spyOn()`)
+
+### Categories that require tests
+Any change touching one of these categories MUST include unit tests in the same task:
+- **Server actions** — every branch (validation failure, business-logic failure, success, framework-error re-throw). Mock the DB helpers and `next-auth`'s `signIn`/`signOut`/`auth` so tests are deterministic.
+- **Validation schemas** (Zod or otherwise) — one assertion per rule (min/max/required/format) plus a happy-path parse.
+- **Middleware** — the redirect/rewrite/pass-through matrix. Extract the decision into a named function (e.g. `decideRedirect`) in a module with no `next-auth` runtime import so it can be unit-tested without the Auth.js wrapper.
+- **Predicates wrapping framework errors** — `isRedirectError`, `isDuplicateKeyError`, and future analogues. Test positive, negative, null, undefined, and wrong-shape cases.
+- **Client form components with state machines** — react-hook-form forms that branch on action results. RTL test covers empty submit, valid submit, action-returns-failure, pending state, and any focus/blur behaviour.
+- **Structural constraints** that protect against runtime-only regressions (e.g. an assertion that `authConfig` does not contain an `adapter` key — a regression would re-introduce the Edge-runtime crypto bug).
 
 ### Test file location
-All unit/component tests live in `/__tests__`, mirroring `/src` structure:
-```
-/__tests__
-  /components
-  /hooks
-  /actions
-  /lib
-```
-Test files named: `ComponentName.test.tsx` / `useSomething.test.ts`
+All unit/component tests live in `/__tests__`, mirroring `/src` structure. Test utilities (helper factories, shared mocks) live in `__tests__/test-utils/`; files there are NOT picked up by the `*.test.*` glob.
 
-### What gets unit tested
-- Client components (rendering, interactions, conditional display)
-- Custom hooks (state transitions, exposed functions)
-- Server actions (input validation, success/error return shapes)
-- Utility functions (all branches)
+Test files named: `<Module>.test.ts` / `<Component>.test.tsx`.
 
-### What does NOT get unit tested
-- Server components — async, server-side; test logic in isolation where practical
-- Next.js internals (`router`, `headers`, `cookies`) — mock these, don't test them
-- Third-party library behaviour — mock the library, test your code's response
+### Mocking conventions
+- `vi.mock(...)` calls go at the top of each test file. Vitest hoists them above imports automatically.
+- For action tests, mock the DB helper modules (`@/lib/users`, `@/lib/password`), the auth module (`@/lib/auth`), and any module that transitively loads Mongoose (top-level `vi.mock('mongoose', () => ({ default: { models: {}, model: vi.fn(), Schema: vi.fn() } }))`).
+- For RTL form tests, mock the relevant server action module and `next/navigation` (`useRouter`, `usePathname`, `useSearchParams`).
+- Synthetic `NEXT_REDIRECT`-shaped errors come from `__tests__/test-utils/redirect-error.ts` (`makeRedirectError(target?: string)`). Do not inline the shape — one source of truth lets us update if Next.js's redirect error shape ever changes.
+
+### Smoke matrices
+A live dev-server smoke (curl/Playwright/manual) is appropriate ONLY when:
+1. The change introduces a new Edge runtime entry (a new `src/middleware.ts`, a new route handler with `export const runtime = 'edge'`, etc.).
+2. The change modifies the middleware bundle composition (a new import into the middleware that might pull in Node-only modules).
+3. The change wires up a cookie + redirect pattern for the first time and there's no existing test pattern for it.
+
+Otherwise: write unit tests instead. The categories above cover everything else.
 
 ### Vitest config
-`vitest.config.ts` at project root — separate from `next.config.ts`:
+`vitest.config.mts` at project root:
 - Environment: `jsdom`
 - Setup file: `vitest.setup.ts` (imports `@testing-library/jest-dom`)
-- Path aliases must match `tsconfig.json`
+- Path aliases resolved via `vite-tsconfig-paths`
+- `passWithNoTests` is unset (default `false`) — if tests are deleted, the suite fails loudly.
 
 ### npm scripts
 ```json

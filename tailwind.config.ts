@@ -5,20 +5,20 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: { 50: '#eff6ff', 500: '#2563eb', 700: '#1d4ed8' },
-        secondary: { 50: '#f5f3ff', 500: '#7c3aed', 700: '#5b21b6' },
+        primary: { 50: '#e7f0ee', 500: '#7faaa3', 700: '#5f8b85' },
+        secondary: { 50: '#f6e6e2', 500: '#c89b94', 700: '#a37b75' },
         neutral: {
-          50: '#f9fafb',
-          200: '#e5e7eb',
-          500: '#6b7280',
-          700: '#374151',
-          900: '#111827',
+          50: '#f7f5f2',
+          200: '#e7e3dc',
+          500: '#857c70',
+          700: '#5a5247',
+          900: '#2f2a23',
         },
-        danger: { 50: '#fef2f2', 500: '#dc2626', 700: '#b91c1c' },
-        success: { 50: '#f0fdf4', 500: '#16a34a', 700: '#15803d' },
+        danger: { 50: '#f5e1dc', 500: '#c97c6d', 700: '#a35a4c' },
+        success: { 50: '#e7eee0', 500: '#8aa775', 700: '#688553' },
       },
       fontFamily: {
-        sans: ['var(--font-inter)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-copse)', 'ui-serif', 'Georgia', 'serif'],
       },
       fontSize: {
         xs: ['1.2rem', { lineHeight: '1.6rem' }],

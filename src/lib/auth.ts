@@ -5,10 +5,11 @@ import { clientPromise } from '@/lib/db'
 import { findUserByName } from '@/lib/users'
 import { verifyPassword } from '@/lib/password'
 import { signInSchema } from '@/lib/validation/signIn'
+import { authConfig } from '@/lib/auth.config'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   adapter: MongoDBAdapter(clientPromise),
-  session: { strategy: 'jwt' },
   providers: [
     Credentials({
       name: 'Credentials',
@@ -33,20 +34,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
-  callbacks: {
-    jwt: async ({ token, user }) => {
-      if (user?.name) {
-        token.name = user.name
-      }
-
-      return token
-    },
-    session: async ({ session, token }) => {
-      if (token.name) {
-        session.user.name = token.name
-      }
-
-      return session
-    },
-  },
 })

@@ -28,6 +28,7 @@ export default function SignUpForm() {
         <span className="block text-base text-neutral-700">Name</span>
         <Input
           type="text"
+          autoFocus
           {...register('name')}
           disabled={formState.isSubmitting}
           error={formState.errors.name?.message}

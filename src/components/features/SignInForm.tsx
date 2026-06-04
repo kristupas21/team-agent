@@ -2,15 +2,12 @@
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/navigation'
 import { signInAction } from '@/actions/signIn'
 import { signInSchema, type SignInInput } from '@/lib/validation/signIn'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 
 export default function SignInForm() {
-  const router = useRouter()
-
   const { register, handleSubmit, formState, setError, clearErrors } = useForm<SignInInput>({
     resolver: zodResolver(signInSchema),
   })
@@ -20,12 +17,9 @@ export default function SignInForm() {
 
     const result = await signInAction(data)
 
-    if (result.success) {
-      router.push('/')
-      return
+    if (!result.success) {
+      setError('root', { message: result.error })
     }
-
-    setError('root', { message: result.error })
   }
 
   return (
@@ -34,6 +28,7 @@ export default function SignInForm() {
         <span className="block text-base text-neutral-700">Name</span>
         <Input
           type="text"
+          autoFocus
           {...register('name')}
           disabled={formState.isSubmitting}
           error={formState.errors.name?.message}

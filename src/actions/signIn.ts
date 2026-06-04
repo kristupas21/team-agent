@@ -1,6 +1,7 @@
 'use server'
 
 import { signIn } from '@/lib/auth'
+import { isRedirectError } from '@/lib/errors'
 import { signInSchema } from '@/lib/validation/signIn'
 import { countUsers } from '@/lib/users'
 
@@ -18,21 +19,33 @@ export async function signInAction(input: {
     return { success: false, error: GENERIC_ERROR }
   }
 
+  let userCount: number
+
   try {
-    if ((await countUsers()) === 0) {
-      console.info('[signIn] no admin user — seed required')
-
-      return { success: false, error: GENERIC_ERROR }
-    }
-
-    await signIn('credentials', {
-      name: parsed.data.name,
-      password: parsed.data.password,
-      redirect: false,
-    })
-
-    return { success: true }
+    userCount = await countUsers()
   } catch {
     return { success: false, error: GENERIC_ERROR }
   }
+
+  if (userCount === 0) {
+    console.info('[signIn] no admin user — seed required')
+
+    return { success: false, error: GENERIC_ERROR }
+  }
+
+  try {
+    await signIn('credentials', {
+      name: parsed.data.name,
+      password: parsed.data.password,
+      redirectTo: '/dashboard',
+    })
+  } catch (err) {
+    if (isRedirectError(err)) {
+      throw err
+    }
+
+    return { success: false, error: GENERIC_ERROR }
+  }
+
+  return { success: true }
 }

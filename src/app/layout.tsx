@@ -1,13 +1,14 @@
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
-import { Inter } from 'next/font/google'
+import { Copse } from 'next/font/google'
 import { cn } from '@/lib/utils'
 import '@/styles/globals.css'
 
-const inter = Inter({
+const copse = Copse({
   subsets: ['latin'],
-  variable: '--font-inter',
+  variable: '--font-copse',
   display: 'swap',
+  weight: '400',
 })
 
 export const metadata: Metadata = {
@@ -21,7 +22,7 @@ type RootLayoutProps = Readonly<{
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={copse.variable}>
       <body className={cn('bg-neutral-50 font-sans text-base text-neutral-900')}>{children}</body>
     </html>
   )
