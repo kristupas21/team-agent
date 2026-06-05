@@ -38,6 +38,16 @@ describe('Button', () => {
     expect(button).toHaveClass('hover:bg-danger-700')
   })
 
+  it('applies the ghost variant classes when variant="ghost"', () => {
+    render(<Button variant="ghost">Ghost</Button>)
+
+    const button = screen.getByRole('button')
+
+    expect(button).toHaveClass('bg-transparent')
+    expect(button).toHaveClass('text-neutral-700')
+    expect(button).toHaveClass('hover:bg-neutral-200')
+  })
+
   it('is disabled and does not fire onClick when disabled is true', async () => {
     const user = userEvent.setup()
     const onClick = vi.fn()

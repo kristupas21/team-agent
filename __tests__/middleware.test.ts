@@ -37,6 +37,27 @@ describe('decideRedirect — signed-out', () => {
   it('passes through /sign-up unchanged', () => {
     expect(decideRedirect(req(null, '/sign-up'))).toBeUndefined()
   })
+
+  it('redirects bare /dashboard/tasks to /', () => {
+    const dest = decideRedirect(req(null, '/dashboard/tasks'))
+
+    expect(dest).toBeInstanceOf(URL)
+    expect(dest?.pathname).toBe('/')
+  })
+
+  it('redirects /dashboard/tasks/new to /', () => {
+    const dest = decideRedirect(req(null, '/dashboard/tasks/new'))
+
+    expect(dest).toBeInstanceOf(URL)
+    expect(dest?.pathname).toBe('/')
+  })
+
+  it('redirects /dashboard/tasks/abc123 to /', () => {
+    const dest = decideRedirect(req(null, '/dashboard/tasks/abc123'))
+
+    expect(dest).toBeInstanceOf(URL)
+    expect(dest?.pathname).toBe('/')
+  })
 })
 
 describe('decideRedirect — signed-in', () => {
@@ -65,5 +86,17 @@ describe('decideRedirect — signed-in', () => {
 
   it('passes through nested /dashboard/sub unchanged', () => {
     expect(decideRedirect(req(adminSession, '/dashboard/sub'))).toBeUndefined()
+  })
+
+  it('passes through bare /dashboard/tasks unchanged', () => {
+    expect(decideRedirect(req(adminSession, '/dashboard/tasks'))).toBeUndefined()
+  })
+
+  it('passes through /dashboard/tasks/new unchanged', () => {
+    expect(decideRedirect(req(adminSession, '/dashboard/tasks/new'))).toBeUndefined()
+  })
+
+  it('passes through /dashboard/tasks/abc123 unchanged', () => {
+    expect(decideRedirect(req(adminSession, '/dashboard/tasks/abc123'))).toBeUndefined()
   })
 })

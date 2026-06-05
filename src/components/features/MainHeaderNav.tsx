@@ -16,7 +16,13 @@ export default function MainHeaderNav({ signedIn }: MainHeaderNavProps) {
   const pathname = usePathname()
   const router = useRouter()
 
-  const showBack = pathname !== '/' && !pathname.startsWith('/dashboard')
+  const showBack =
+    pathname === '/sign-in' ||
+    pathname === '/sign-up' ||
+    pathname === '/dashboard/tasks' ||
+    pathname.startsWith('/dashboard/tasks/')
+
+  const backTarget = pathname.replace(/\/[^/]+$/, '') || '/'
 
   const onSignInPage = pathname === '/sign-in'
   const onSignUpPage = pathname === '/sign-up'
@@ -30,7 +36,7 @@ export default function MainHeaderNav({ signedIn }: MainHeaderNavProps) {
             variant="secondary"
             aria-label="Back"
             leftIcon={<MdArrowBack />}
-            onClick={() => router.back()}
+            onClick={() => router.push(backTarget)}
           />
         )}
       </div>

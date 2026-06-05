@@ -25,6 +25,9 @@ Next.js application using the App Router. All new development follows App Router
 ## Project Structure
 
 ```
+/public
+  /images                     ← RAW (unprocessed) image drop zone — gitignored, local-only
+  /img                        ← PROCESSED, web-ready images — committed. URL: /img/<file>
 /src
   /app                        ← App Router: all routes live here
     /api                      ← API route handlers (route.ts files)
@@ -44,6 +47,23 @@ Next.js application using the App Router. All new development follows App Router
   /styles
     globals.css               ← Tailwind base imports, CSS variables
 ```
+
+### Image assets
+
+Two folders, two roles:
+
+- **`/public/images/`** — raw / unprocessed source images. Drop new images here when you receive or download them. **This folder is gitignored.** Raw images must never be committed (they are typically multi-MB and would bloat the repo). The folder itself stays in the tree via a `.gitkeep`.
+- **`/public/img/`** — processed, web-ready images. Committed. **All production code references images from this folder** via URLs like `/img/<file>` (e.g. `<Image src="/img/logo.png" alt="..." width={...} height={...} />`).
+
+**Required preprocessing step before commit**: any raw image dropped into `/public/images/` must be compressed and resized (and converted format if the format is unsuitable) before being moved into `/public/img/`. The raw original stays in `/public/images/` (gitignored) for future re-processing if needed. Reasonable defaults:
+- Resize so the longest dimension is ≤ ~500–800 px (sized for the largest display surface the image will appear in, at 2× retina).
+- Keep PNG when transparency matters; otherwise prefer JPEG. WebP is preferred if your tooling can produce it.
+- Target file size: ≤ ~300 KB per image. Larger only with justification.
+- `sips` (macOS built-in) handles most cases: `sips -Z 500 input.png --out output.png`.
+
+Other static files (favicons, robots.txt, manifest.json) sit at `/public/` root.
+
+Always render via `Image` from `next/image` — never a bare `<img>` (see Forbidden Patterns).
 
 ---
 

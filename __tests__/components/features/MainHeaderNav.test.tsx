@@ -2,12 +2,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-const mockBack = vi.fn()
+const mockPush = vi.fn()
 const pathnameRef = { current: '/' }
 
 vi.mock('next/navigation', () => ({
   usePathname: () => pathnameRef.current,
-  useRouter: () => ({ back: mockBack, push: vi.fn(), replace: vi.fn() }),
+  useRouter: () => ({ back: vi.fn(), push: mockPush, replace: vi.fn() }),
   useSearchParams: () => new URLSearchParams(),
 }))
 
@@ -23,7 +23,7 @@ function setPath(p: string) {
 
 describe('MainHeaderNav — signed-out', () => {
   beforeEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
     setPath('/')
   })
 
@@ -54,27 +54,39 @@ describe('MainHeaderNav — signed-out', () => {
     expect(screen.getByRole('button', { name: /back/i })).toBeInTheDocument()
   })
 
-  it('calls router.back() exactly once when the Back button is clicked on /sign-in', async () => {
-    setPath('/sign-in')
-    const user = userEvent.setup()
-    render(<MainHeaderNav signedIn={false} />)
-
-    await user.click(screen.getByRole('button', { name: /back/i }))
-
-    expect(mockBack).toHaveBeenCalledTimes(1)
-  })
-
   it('does NOT render the Back button on /', () => {
     setPath('/')
     render(<MainHeaderNav signedIn={false} />)
 
     expect(screen.queryByRole('button', { name: /back/i })).toBeNull()
   })
+
+  it('calls router.push("/") exactly once when the Back button is clicked on /sign-in', async () => {
+    setPath('/sign-in')
+    const user = userEvent.setup()
+    render(<MainHeaderNav signedIn={false} />)
+
+    await user.click(screen.getByRole('button', { name: /back/i }))
+
+    expect(mockPush).toHaveBeenCalledTimes(1)
+    expect(mockPush).toHaveBeenCalledWith('/')
+  })
+
+  it('calls router.push("/") exactly once when the Back button is clicked on /sign-up', async () => {
+    setPath('/sign-up')
+    const user = userEvent.setup()
+    render(<MainHeaderNav signedIn={false} />)
+
+    await user.click(screen.getByRole('button', { name: /back/i }))
+
+    expect(mockPush).toHaveBeenCalledTimes(1)
+    expect(mockPush).toHaveBeenCalledWith('/')
+  })
 })
 
 describe('MainHeaderNav — signed-in', () => {
   beforeEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
     setPath('/dashboard')
   })
 
@@ -101,10 +113,64 @@ describe('MainHeaderNav — signed-in', () => {
     expect(screen.getByRole('button', { name: /sign out/i })).toBeInTheDocument()
   })
 
-  it('does NOT render the Back button on nested /dashboard/sub paths', () => {
+  it('does NOT render the Back button on nested /dashboard/sub paths (non-tasks)', () => {
     setPath('/dashboard/sub')
     render(<MainHeaderNav signedIn userName="admin" />)
 
     expect(screen.queryByRole('button', { name: /back/i })).toBeNull()
+  })
+
+  it('renders the Back button on /dashboard/tasks', () => {
+    setPath('/dashboard/tasks')
+    render(<MainHeaderNav signedIn userName="admin" />)
+
+    expect(screen.getByRole('button', { name: /back/i })).toBeInTheDocument()
+  })
+
+  it('renders the Back button on /dashboard/tasks/new and /dashboard/tasks/<id>', () => {
+    setPath('/dashboard/tasks/new')
+    const { unmount } = render(<MainHeaderNav signedIn userName="admin" />)
+
+    expect(screen.getByRole('button', { name: /back/i })).toBeInTheDocument()
+
+    unmount()
+
+    setPath('/dashboard/tasks/abc123')
+    render(<MainHeaderNav signedIn userName="admin" />)
+
+    expect(screen.getByRole('button', { name: /back/i })).toBeInTheDocument()
+  })
+
+  it('calls router.push("/dashboard") exactly once when the Back button is clicked on /dashboard/tasks', async () => {
+    setPath('/dashboard/tasks')
+    const user = userEvent.setup()
+    render(<MainHeaderNav signedIn userName="admin" />)
+
+    await user.click(screen.getByRole('button', { name: /back/i }))
+
+    expect(mockPush).toHaveBeenCalledTimes(1)
+    expect(mockPush).toHaveBeenCalledWith('/dashboard')
+  })
+
+  it('calls router.push("/dashboard/tasks") exactly once when the Back button is clicked on /dashboard/tasks/new', async () => {
+    setPath('/dashboard/tasks/new')
+    const user = userEvent.setup()
+    render(<MainHeaderNav signedIn userName="admin" />)
+
+    await user.click(screen.getByRole('button', { name: /back/i }))
+
+    expect(mockPush).toHaveBeenCalledTimes(1)
+    expect(mockPush).toHaveBeenCalledWith('/dashboard/tasks')
+  })
+
+  it('calls router.push("/dashboard/tasks") exactly once when the Back button is clicked on /dashboard/tasks/<id>', async () => {
+    setPath('/dashboard/tasks/abc123')
+    const user = userEvent.setup()
+    render(<MainHeaderNav signedIn userName="admin" />)
+
+    await user.click(screen.getByRole('button', { name: /back/i }))
+
+    expect(mockPush).toHaveBeenCalledTimes(1)
+    expect(mockPush).toHaveBeenCalledWith('/dashboard/tasks')
   })
 })

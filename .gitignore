@@ -34,3 +34,7 @@ yarn-error.log*
 
 # archived draft notes
 *.draft.md
+
+# raw (unprocessed) image assets — must be compressed + moved to /public/img/ before commit
+/public/images/*
+!/public/images/.gitkeep
