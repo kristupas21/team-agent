@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Card from '@/components/ui/Card'
-import SignInForm from '@/components/features/SignInForm'
+import SignInForm from '@/components/features/auth/SignInForm'
 
 export const metadata: Metadata = {
   title: 'Sign In',

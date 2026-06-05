@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import DashboardWidgetCard from '@/components/features/DashboardWidgetCard'
+import DashboardWidgetCard from '@/components/features/dashboard/DashboardWidgetCard'
 
 describe('DashboardWidgetCard', () => {
   it('renders the title as a heading', () => {

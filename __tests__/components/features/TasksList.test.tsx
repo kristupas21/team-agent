@@ -12,7 +12,7 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(),
 }))
 
-import TasksList from '@/components/features/TasksList'
+import TasksList from '@/components/features/tasks/TasksList'
 import { deleteTaskAction } from '@/actions/deleteTask'
 import type { TaskDoc } from '@/models/Task'
 

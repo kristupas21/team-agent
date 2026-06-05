@@ -8,7 +8,7 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(),
 }))
 
-import TaskForm from '@/components/features/TaskForm'
+import TaskForm from '@/components/features/tasks/TaskForm'
 
 describe('TaskForm', () => {
   beforeEach(() => {

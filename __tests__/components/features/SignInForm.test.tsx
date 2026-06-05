@@ -11,7 +11,7 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(),
 }))
 
-import SignInForm from '@/components/features/SignInForm'
+import SignInForm from '@/components/features/auth/SignInForm'
 import { signInAction } from '@/actions/signIn'
 
 describe('SignInForm', () => {

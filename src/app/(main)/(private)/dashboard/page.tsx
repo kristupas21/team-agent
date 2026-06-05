@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
-import DashboardWidgetCard from '@/components/features/DashboardWidgetCard'
+import DashboardWidgetCard from '@/components/features/dashboard/DashboardWidgetCard'
 
 export const metadata: Metadata = {
   title: 'Dashboard',

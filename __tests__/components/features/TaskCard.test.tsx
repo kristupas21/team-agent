@@ -10,7 +10,7 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(),
 }))
 
-import TaskCard from '@/components/features/TaskCard'
+import TaskCard from '@/components/features/tasks/TaskCard'
 import type { TaskDoc } from '@/models/Task'
 
 const baseTask: TaskDoc = {

@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import Card from '@/components/ui/Card'
-import TaskForm from '@/components/features/TaskForm'
+import TaskForm from '@/components/features/tasks/TaskForm'
 import { updateTaskAction } from '@/actions/updateTask'
 import { getTaskById } from '@/lib/tasks'
 

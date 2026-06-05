@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { getTasksForUser } from '@/lib/tasks'
-import TasksList from '@/components/features/TasksList'
+import TasksList from '@/components/features/tasks/TasksList'
 
 export const metadata: Metadata = {
   title: 'Tasks',
