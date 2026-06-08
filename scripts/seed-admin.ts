@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 import { requireEnv } from '../src/lib/env'
-import { connectDB } from '../src/lib/db'
-import { hashPassword } from '../src/lib/password'
+import { connectDB } from '../src/lib/db/db'
+import { hashPassword } from '../src/lib/auth/password'
 import { UserModel } from '../src/models/User'
 
 async function main(): Promise<void> {

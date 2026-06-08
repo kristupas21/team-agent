@@ -4,17 +4,17 @@ import { makeRedirectError } from '../test-utils/redirect-error'
 vi.mock('mongoose', () => ({
   default: { models: {}, model: vi.fn(), Schema: vi.fn() },
 }))
-vi.mock('@/lib/users', () => ({
+vi.mock('@/lib/db/users', () => ({
   countUsers: vi.fn(),
   findUserByName: vi.fn(),
 }))
-vi.mock('@/lib/auth', () => ({
+vi.mock('@/lib/auth/auth', () => ({
   signIn: vi.fn(),
 }))
 
 import { signInAction } from '@/actions/signIn'
-import { countUsers } from '@/lib/users'
-import { signIn } from '@/lib/auth'
+import { countUsers } from '@/lib/db/users'
+import { signIn } from '@/lib/auth/auth'
 
 const GENERIC = 'Invalid name or password.'
 

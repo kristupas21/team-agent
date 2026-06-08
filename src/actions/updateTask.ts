@@ -1,8 +1,9 @@
 'use server'
 
 import { redirect } from 'next/navigation'
-import { auth } from '@/lib/auth'
-import { updateTask } from '@/lib/tasks'
+import { auth } from '@/lib/auth/auth'
+import { updateTask } from '@/lib/db/tasks'
+import type { TaskPriority } from '@/lib/task-priority'
 import { taskSchema } from '@/lib/validation/task'
 
 export type UpdateTaskResult = { success: true } | { success: false; error: string }
@@ -11,7 +12,7 @@ const GENERIC_ERROR = 'Something went wrong. Please try again.'
 
 export async function updateTaskAction(
   id: string,
-  input: { title: string; description?: string }
+  input: { title: string; description?: string; priority?: TaskPriority }
 ): Promise<UpdateTaskResult> {
   const parsed = taskSchema.safeParse(input)
 

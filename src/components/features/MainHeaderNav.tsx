@@ -12,15 +12,14 @@ type MainHeaderNavProps = Readonly<{
   userName?: string
 }>
 
-export default function MainHeaderNav({ signedIn }: MainHeaderNavProps) {
+export default function MainHeaderNav({ signedIn, userName }: MainHeaderNavProps) {
   const pathname = usePathname()
   const router = useRouter()
 
   const showBack =
     pathname === '/sign-in' ||
     pathname === '/sign-up' ||
-    pathname === '/dashboard/tasks' ||
-    pathname.startsWith('/dashboard/tasks/')
+    (pathname.startsWith('/dashboard/') && pathname !== '/dashboard')
 
   const backTarget = pathname.replace(/\/[^/]+$/, '') || '/'
 
@@ -33,21 +32,32 @@ export default function MainHeaderNav({ signedIn }: MainHeaderNavProps) {
         {showBack && (
           <Button
             type="button"
-            variant="secondary"
+            variant="ghost"
             aria-label="Back"
             leftIcon={<MdArrowBack />}
             onClick={() => router.push(backTarget)}
-          />
+          >
+            <span className="hidden md:inline">Back</span>
+          </Button>
         )}
       </div>
 
       <div className="flex items-center gap-3">
         {signedIn ? (
-          <form action={signOutAction}>
-            <Button type="submit" variant="primary" leftIcon={<MdLogout />}>
-              Sign Out
-            </Button>
-          </form>
+          <>
+            {userName && (
+              <div className="flex flex-col items-end leading-tight">
+                <span className="text-xs text-neutral-500">Signed in as:</span>
+                <span className="text-sm font-medium text-neutral-900">{userName}</span>
+              </div>
+            )}
+
+            <form action={signOutAction}>
+              <Button type="submit" variant="primary" aria-label="Sign out" leftIcon={<MdLogout />}>
+                <span className="hidden md:inline">Sign Out</span>
+              </Button>
+            </form>
+          </>
         ) : (
           <>
             {onSignInPage ? (

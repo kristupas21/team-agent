@@ -1,7 +1,7 @@
 'use server'
 
-import { auth } from '@/lib/auth'
-import { deleteTask } from '@/lib/tasks'
+import { auth } from '@/lib/auth/auth'
+import { deleteTask } from '@/lib/db/tasks'
 
 export type DeleteTaskResult = { success: true } | { success: false; error: string }
 

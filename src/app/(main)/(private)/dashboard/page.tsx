@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
-import { auth } from '@/lib/auth'
+import { auth } from '@/lib/auth/auth'
 import DashboardWidgetCard from '@/components/features/dashboard/DashboardWidgetCard'
 
 export const metadata: Metadata = {
@@ -21,6 +21,7 @@ export default async function DashboardPage() {
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <DashboardWidgetCard href="/dashboard/tasks" title="Tasks" imageKey="tasks" />
+          <DashboardWidgetCard href="/dashboard/notes" title="Notes" imageKey="notes" />
         </div>
       </div>
     </main>

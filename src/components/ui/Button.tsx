@@ -1,6 +1,7 @@
 'use client'
 
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
+import { cn } from '@/lib/utils'
 import { buttonClass, type ButtonVariant } from './buttonClass'
 
 export type ButtonProps = Readonly<
@@ -10,6 +11,7 @@ export type ButtonProps = Readonly<
     loading?: boolean
     leftIcon?: ReactNode
     rightIcon?: ReactNode
+    compact?: boolean
   }
 >
 
@@ -20,6 +22,7 @@ export default function Button({
   disabled,
   leftIcon,
   rightIcon,
+  compact = false,
   className,
   ...props
 }: ButtonProps) {
@@ -27,7 +30,7 @@ export default function Button({
 
   return (
     <button
-      className={buttonClass(variant, className)}
+      className={cn(buttonClass(variant), compact && 'p-2', className)}
       disabled={isDisabled}
       aria-busy={loading || undefined}
       {...props}

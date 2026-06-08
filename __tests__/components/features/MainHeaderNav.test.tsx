@@ -113,11 +113,11 @@ describe('MainHeaderNav — signed-in', () => {
     expect(screen.getByRole('button', { name: /sign out/i })).toBeInTheDocument()
   })
 
-  it('does NOT render the Back button on nested /dashboard/sub paths (non-tasks)', () => {
+  it('renders the Back button on nested /dashboard/<sub> paths (generic rule)', () => {
     setPath('/dashboard/sub')
     render(<MainHeaderNav signedIn userName="admin" />)
 
-    expect(screen.queryByRole('button', { name: /back/i })).toBeNull()
+    expect(screen.getByRole('button', { name: /back/i })).toBeInTheDocument()
   })
 
   it('renders the Back button on /dashboard/tasks', () => {
@@ -172,5 +172,67 @@ describe('MainHeaderNav — signed-in', () => {
 
     expect(mockPush).toHaveBeenCalledTimes(1)
     expect(mockPush).toHaveBeenCalledWith('/dashboard/tasks')
+  })
+
+  it('renders the Back button with the ghost variant class set', () => {
+    setPath('/dashboard/tasks')
+    render(<MainHeaderNav signedIn userName="admin" />)
+
+    const backButton = screen.getByRole('button', { name: /back/i })
+
+    expect(backButton).toHaveClass('bg-transparent', 'text-neutral-700')
+  })
+
+  it('wraps the Back button text in a span hidden on mobile (`hidden md:inline`)', () => {
+    setPath('/dashboard/tasks')
+    render(<MainHeaderNav signedIn userName="admin" />)
+
+    const backText = screen.getByText('Back')
+
+    expect(backText.tagName).toBe('SPAN')
+    expect(backText).toHaveClass('hidden', 'md:inline')
+  })
+
+  it('wraps the Sign Out button text in a span hidden on mobile (`hidden md:inline`)', () => {
+    setPath('/dashboard')
+    render(<MainHeaderNav signedIn userName="admin" />)
+
+    const signOutText = screen.getByText('Sign Out')
+
+    expect(signOutText.tagName).toBe('SPAN')
+    expect(signOutText).toHaveClass('hidden', 'md:inline')
+  })
+
+  it('renders the user-info block ("Signed in as:" + username) when signedIn && userName', () => {
+    setPath('/dashboard')
+    render(<MainHeaderNav signedIn userName="alice" />)
+
+    expect(screen.getByText('Signed in as:')).toBeInTheDocument()
+    expect(screen.getByText('alice')).toBeInTheDocument()
+  })
+
+  it('does NOT render the user-info block when userName is omitted', () => {
+    setPath('/dashboard')
+    render(<MainHeaderNav signedIn />)
+
+    expect(screen.queryByText('Signed in as:')).toBeNull()
+  })
+
+  it('renders the Back button on /dashboard/notes', () => {
+    setPath('/dashboard/notes')
+    render(<MainHeaderNav signedIn userName="admin" />)
+
+    expect(screen.getByRole('button', { name: /back/i })).toBeInTheDocument()
+  })
+
+  it('calls router.push("/dashboard") exactly once when the Back button is clicked on /dashboard/notes', async () => {
+    setPath('/dashboard/notes')
+    const user = userEvent.setup()
+    render(<MainHeaderNav signedIn userName="admin" />)
+
+    await user.click(screen.getByRole('button', { name: /back/i }))
+
+    expect(mockPush).toHaveBeenCalledTimes(1)
+    expect(mockPush).toHaveBeenCalledWith('/dashboard')
   })
 })

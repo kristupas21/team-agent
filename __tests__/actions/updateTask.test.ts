@@ -4,10 +4,10 @@ import { makeRedirectError } from '../test-utils/redirect-error'
 vi.mock('mongoose', () => ({
   default: { models: {}, model: vi.fn(), Schema: vi.fn() },
 }))
-vi.mock('@/lib/auth', () => ({
+vi.mock('@/lib/auth/auth', () => ({
   auth: vi.fn(),
 }))
-vi.mock('@/lib/tasks', () => ({
+vi.mock('@/lib/db/tasks', () => ({
   updateTask: vi.fn(),
 }))
 vi.mock('next/navigation', () => ({
@@ -17,8 +17,8 @@ vi.mock('next/navigation', () => ({
 }))
 
 import { updateTaskAction } from '@/actions/updateTask'
-import { auth } from '@/lib/auth'
-import { updateTask } from '@/lib/tasks'
+import { auth } from '@/lib/auth/auth'
+import { updateTask } from '@/lib/db/tasks'
 import { redirect } from 'next/navigation'
 
 const GENERIC = 'Something went wrong. Please try again.'
@@ -32,6 +32,7 @@ const updatedTask = {
   _id: 'task-1',
   title: 'New title',
   description: 'New description',
+  priority: 'medium' as const,
   userId: 'alice',
   createdAt: new Date('2026-01-01T00:00:00.000Z'),
   updatedAt: new Date('2026-01-02T00:00:00.000Z'),
@@ -82,6 +83,7 @@ describe('updateTaskAction', () => {
     expect(updateTask).toHaveBeenCalledWith('task-1', 'alice', {
       title: 'New title',
       description: 'New description',
+      priority: 'medium',
     })
     expect(redirect).toHaveBeenCalledWith('/dashboard/tasks')
   })

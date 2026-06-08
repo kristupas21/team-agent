@@ -11,6 +11,15 @@ describe('WIDGET_IMAGES', () => {
     })
   })
 
+  it('maps "notes" to /img/butterfly.png with empty alt and 350x350 dimensions', () => {
+    expect(WIDGET_IMAGES.notes).toEqual({
+      src: '/img/butterfly.png',
+      alt: '',
+      width: 350,
+      height: 350,
+    })
+  })
+
   it('exposes a non-empty set of widget keys', () => {
     const keys = Object.keys(WIDGET_IMAGES)
 

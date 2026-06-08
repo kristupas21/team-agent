@@ -57,6 +57,7 @@ describe('TaskForm', () => {
     expect(action).toHaveBeenCalledWith({
       title: 'My new task',
       description: 'Some description',
+      priority: 'medium',
     })
   })
 
@@ -111,5 +112,50 @@ describe('TaskForm', () => {
     render(<TaskForm submitLabel="Save Task" action={vi.fn()} />)
 
     expect(screen.getByRole('button', { name: 'Save Task' })).toBeInTheDocument()
+  })
+
+  it('renders the Priority dropdown with the four options and Medium pre-selected', () => {
+    render(<TaskForm submitLabel="Create Task" action={vi.fn()} />)
+
+    const dropdown = screen.getByRole('combobox')
+
+    expect(dropdown).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: 'Urgent' })).toHaveValue('urgent')
+    expect(screen.getByRole('option', { name: 'High' })).toHaveValue('high')
+    expect(screen.getByRole('option', { name: 'Medium' })).toHaveValue('medium')
+    expect(screen.getByRole('option', { name: 'Low' })).toHaveValue('low')
+    expect(dropdown).toHaveValue('medium')
+  })
+
+  it('passes the selected priority through to the action on submit', async () => {
+    const user = userEvent.setup()
+    const action = vi.fn().mockResolvedValueOnce({ success: true })
+
+    render(<TaskForm submitLabel="Create Task" action={action} />)
+
+    await user.type(screen.getByRole('textbox', { name: /title/i }), 'Important task')
+    await user.selectOptions(screen.getByRole('combobox'), 'urgent')
+    await user.click(screen.getByRole('button', { name: /create task/i }))
+
+    await waitFor(() => {
+      expect(action).toHaveBeenCalledTimes(1)
+    })
+    expect(action).toHaveBeenCalledWith({
+      title: 'Important task',
+      description: undefined,
+      priority: 'urgent',
+    })
+  })
+
+  it('pre-fills priority from initialValues in edit mode', () => {
+    render(
+      <TaskForm
+        submitLabel="Save Task"
+        initialValues={{ title: 'X', description: 'Y', priority: 'low' }}
+        action={vi.fn()}
+      />
+    )
+
+    expect(screen.getByRole('combobox')).toHaveValue('low')
   })
 })

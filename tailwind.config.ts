@@ -17,6 +17,10 @@ const config: Config = {
         },
         danger: { 50: '#f5e1dc', 500: '#c97c6d', 700: '#a35a4c' },
         success: { 50: '#e4e6cc', 500: '#8aa775', 700: '#688553' },
+        bordeaux: { 50: '#f0d8d4', 500: '#8a2e2e', 700: '#5f1f1f' },
+        amber: { 50: '#fbeed1', 500: '#c98c1f', 700: '#8e5f0c' },
+        slate: { 50: '#dde2e6', 500: '#6b7a85', 700: '#465058' },
+        'light-blue': { 50: '#d9e8f2', 500: '#5a8cb0', 700: '#3a5e7a' },
       },
       maxWidth: {
         content: '1100px',

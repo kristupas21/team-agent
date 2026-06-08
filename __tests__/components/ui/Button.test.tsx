@@ -146,4 +146,24 @@ describe('Button', () => {
     expect(screen.queryByTestId('right-icon')).toBeNull()
     expect(screen.queryByText('Submit')).toBeNull()
   })
+
+  it('uses px-4 py-2 padding by default (compact omitted)', () => {
+    render(<Button>Default</Button>)
+
+    const button = screen.getByRole('button', { name: 'Default' })
+
+    expect(button).toHaveClass('px-4', 'py-2')
+    expect(button).not.toHaveClass('p-2')
+  })
+
+  it('applies equal p-2 padding when compact is true', () => {
+    render(
+      <Button compact aria-label="Icon only" leftIcon={<svg data-testid="icon" />} />
+    )
+
+    const button = screen.getByRole('button', { name: 'Icon only' })
+
+    expect(button).toHaveClass('p-2')
+    expect(button).not.toHaveClass('px-4', 'py-2')
+  })
 })

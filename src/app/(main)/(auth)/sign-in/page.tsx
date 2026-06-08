@@ -8,8 +8,8 @@ export const metadata: Metadata = {
 
 export default function SignInPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center p-4">
-      <Card>
+    <main className="flex min-h-screen items-start justify-center px-4 pt-20">
+      <Card className="md:max-w-2xl">
         <SignInForm />
       </Card>
     </main>

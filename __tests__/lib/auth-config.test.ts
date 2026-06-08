@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { authConfig } from '@/lib/auth.config'
+import { authConfig } from '@/lib/auth/auth.config'
 
 describe('authConfig (edge-safe split-config)', () => {
   it('does NOT include an adapter (would drag Node-only modules into Edge runtime)', () => {

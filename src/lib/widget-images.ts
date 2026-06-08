@@ -7,6 +7,7 @@ export type WidgetImageEntry = Readonly<{
 
 export const WIDGET_IMAGES = {
   tasks: { src: '/img/cat.png', alt: '', width: 500, height: 500 },
+  notes: { src: '/img/butterfly.png', alt: '', width: 350, height: 350 },
 } as const satisfies Readonly<Record<string, WidgetImageEntry>>
 
 export type WidgetImageKey = keyof typeof WIDGET_IMAGES

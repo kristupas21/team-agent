@@ -3,16 +3,16 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 vi.mock('mongoose', () => ({
   default: { models: {}, model: vi.fn(), Schema: vi.fn() },
 }))
-vi.mock('@/lib/auth', () => ({
+vi.mock('@/lib/auth/auth', () => ({
   auth: vi.fn(),
 }))
-vi.mock('@/lib/tasks', () => ({
+vi.mock('@/lib/db/tasks', () => ({
   deleteTask: vi.fn(),
 }))
 
 import { deleteTaskAction } from '@/actions/deleteTask'
-import { auth } from '@/lib/auth'
-import { deleteTask } from '@/lib/tasks'
+import { auth } from '@/lib/auth/auth'
+import { deleteTask } from '@/lib/db/tasks'
 
 describe('deleteTaskAction', () => {
   beforeEach(() => {

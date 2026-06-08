@@ -1,4 +1,4 @@
-import { connectDB } from '@/lib/db'
+import { connectDB } from '@/lib/db/db'
 import { UserModel, type UserDoc } from '@/models/User'
 
 export async function findUserByName(name: string): Promise<UserDoc | null> {

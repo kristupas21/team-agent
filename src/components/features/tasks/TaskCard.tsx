@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { MdClose } from 'react-icons/md'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
+import Pill from '@/components/ui/Pill'
+import { PRIORITY_LABELS, PRIORITY_PILL_VARIANT } from '@/lib/task-priority'
 import type { TaskDoc } from '@/models/Task'
 
 type TaskCardProps = Readonly<{
@@ -34,7 +36,7 @@ export default function TaskCard({ task, onDelete, isDeleting }: TaskCardProps) 
   return (
     <Card
       onClick={handleCardClick}
-      className="group relative h-full cursor-pointer transition-colors hover:bg-neutral-900 md:max-w-none"
+      className="group relative flex h-full flex-col cursor-pointer transition-colors hover:bg-neutral-900 md:max-w-none"
     >
       <h3 className="text-lg font-medium text-neutral-900 transition-colors group-hover:text-neutral-50">
         {task.title}
@@ -50,9 +52,16 @@ export default function TaskCard({ task, onDelete, isDeleting }: TaskCardProps) 
         </p>
       )}
 
+      <div className="mt-auto pt-3">
+        <Pill variant={PRIORITY_PILL_VARIANT[task.priority]}>
+          {PRIORITY_LABELS[task.priority]}
+        </Pill>
+      </div>
+
       <Button
         type="button"
         variant="ghost"
+        compact
         aria-label="Delete"
         leftIcon={<MdClose />}
         loading={isDeleting}

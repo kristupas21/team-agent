@@ -4,19 +4,19 @@ import { makeRedirectError } from '../test-utils/redirect-error'
 vi.mock('mongoose', () => ({
   default: { models: {}, model: vi.fn(), Schema: vi.fn() },
 }))
-vi.mock('@/lib/users', () => ({
+vi.mock('@/lib/db/users', () => ({
   createUser: vi.fn(),
 }))
-vi.mock('@/lib/password', () => ({
+vi.mock('@/lib/auth/password', () => ({
   hashPassword: vi.fn().mockResolvedValue('hashed-pw'),
 }))
-vi.mock('@/lib/auth', () => ({
+vi.mock('@/lib/auth/auth', () => ({
   signIn: vi.fn(),
 }))
 
 import { signUpAction } from '@/actions/signUp'
-import { createUser } from '@/lib/users'
-import { signIn } from '@/lib/auth'
+import { createUser } from '@/lib/db/users'
+import { signIn } from '@/lib/auth/auth'
 
 const GENERIC = 'Something went wrong. Please try again.'
 const DUPLICATE = 'Username is already taken.'

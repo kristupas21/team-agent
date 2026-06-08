@@ -17,6 +17,7 @@ const baseTask: TaskDoc = {
   _id: 'task-1',
   title: 'Buy groceries',
   description: 'Eggs, milk, bread',
+  priority: 'medium',
   userId: 'alice',
   createdAt: new Date('2026-01-01T00:00:00.000Z'),
   updatedAt: new Date('2026-01-01T00:00:00.000Z'),
@@ -101,12 +102,12 @@ describe('TaskCard', () => {
     expect(dateLine.textContent).toMatch(/^Updated \w+ \d{1,2}, \d{4}$/)
   })
 
-  it('positions the Delete button absolutely at the top-right of the Card', () => {
+  it('positions the Delete button absolutely at the top-right of the Card with compact padding', () => {
     render(<TaskCard task={baseTask} onDelete={vi.fn()} isDeleting={false} />)
 
     const deleteButton = screen.getByRole('button', { name: 'Delete' })
 
-    expect(deleteButton).toHaveClass('absolute', 'top-2', 'right-2')
+    expect(deleteButton).toHaveClass('absolute', 'top-2', 'right-2', 'p-2')
   })
 
   it('applies the dark-on-hovered-card background override to the Delete button', () => {
@@ -115,5 +116,57 @@ describe('TaskCard', () => {
     const deleteButton = screen.getByRole('button', { name: 'Delete' })
 
     expect(deleteButton).toHaveClass('group-hover:text-neutral-50', 'group-hover:hover:bg-neutral-700')
+  })
+
+  it('renders the priority pill with the correct label for a medium-priority task', () => {
+    render(<TaskCard task={baseTask} onDelete={vi.fn()} isDeleting={false} />)
+
+    const pill = screen.getByText('Medium')
+
+    expect(pill).toBeInTheDocument()
+    expect(pill).toHaveClass('bg-slate-50', 'text-slate-700')
+  })
+
+  it('renders the Card as a vertical flex column so the pill can be pinned to the bottom', () => {
+    render(<TaskCard task={baseTask} onDelete={vi.fn()} isDeleting={false} />)
+
+    const heading = screen.getByRole('heading', { level: 3, name: 'Buy groceries' })
+    const card = heading.parentElement
+
+    expect(card).not.toBeNull()
+    expect(card).toHaveClass('flex', 'flex-col')
+  })
+
+  it('pins the priority pill to the bottom via mt-auto + pt-3', () => {
+    render(<TaskCard task={baseTask} onDelete={vi.fn()} isDeleting={false} />)
+
+    const pill = screen.getByText('Medium')
+    const wrapper = pill.parentElement
+
+    expect(wrapper).not.toBeNull()
+    expect(wrapper).toHaveClass('mt-auto', 'pt-3')
+    expect(wrapper).not.toHaveClass('mt-3')
+  })
+
+  it('maps each priority value to its expected pill variant and label', () => {
+    const cases: ReadonlyArray<{ priority: TaskDoc['priority']; label: string; bg: string }> = [
+      { priority: 'urgent', label: 'Urgent', bg: 'bg-bordeaux-50' },
+      { priority: 'high', label: 'High', bg: 'bg-amber-50' },
+      { priority: 'medium', label: 'Medium', bg: 'bg-slate-50' },
+      { priority: 'low', label: 'Low', bg: 'bg-light-blue-50' },
+    ]
+
+    for (const { priority, label, bg } of cases) {
+      const { unmount } = render(
+        <TaskCard task={{ ...baseTask, priority }} onDelete={vi.fn()} isDeleting={false} />
+      )
+
+      const pill = screen.getByText(label)
+
+      expect(pill).toBeInTheDocument()
+      expect(pill).toHaveClass(bg)
+
+      unmount()
+    }
   })
 })

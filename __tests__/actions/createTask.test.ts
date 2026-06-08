@@ -4,10 +4,10 @@ import { makeRedirectError } from '../test-utils/redirect-error'
 vi.mock('mongoose', () => ({
   default: { models: {}, model: vi.fn(), Schema: vi.fn() },
 }))
-vi.mock('@/lib/auth', () => ({
+vi.mock('@/lib/auth/auth', () => ({
   auth: vi.fn(),
 }))
-vi.mock('@/lib/tasks', () => ({
+vi.mock('@/lib/db/tasks', () => ({
   createTask: vi.fn(),
 }))
 vi.mock('next/navigation', () => ({
@@ -17,8 +17,8 @@ vi.mock('next/navigation', () => ({
 }))
 
 import { createTaskAction } from '@/actions/createTask'
-import { auth } from '@/lib/auth'
-import { createTask } from '@/lib/tasks'
+import { auth } from '@/lib/auth/auth'
+import { createTask } from '@/lib/db/tasks'
 import { redirect } from 'next/navigation'
 
 const GENERIC = 'Something went wrong. Please try again.'
@@ -60,6 +60,7 @@ describe('createTaskAction', () => {
     expect(createTask).toHaveBeenCalledWith({
       title: 'valid title',
       description: 'some description',
+      priority: 'medium',
       userId: 'alice',
     })
     expect(redirect).toHaveBeenCalledWith('/dashboard/tasks')

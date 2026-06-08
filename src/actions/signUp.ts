@@ -1,9 +1,9 @@
 'use server'
 
-import { signIn } from '@/lib/auth'
+import { signIn } from '@/lib/auth/auth'
 import { isDuplicateKeyError } from '@/lib/errors'
-import { hashPassword } from '@/lib/password'
-import { createUser } from '@/lib/users'
+import { hashPassword } from '@/lib/auth/password'
+import { createUser } from '@/lib/db/users'
 import { signUpSchema } from '@/lib/validation/signUp'
 
 export type SignUpResult = { success: true } | { success: false; error: string }

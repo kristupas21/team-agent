@@ -1,17 +1,23 @@
-import { connectDB } from '@/lib/db'
+import { connectDB } from '@/lib/db/db'
 import { TaskModel, type TaskDoc } from '@/models/Task'
+import {
+  compareTasksByPriorityThenDate,
+  type TaskPriority,
+} from '@/lib/task-priority'
 
 export async function getTasksForUser(userName: string): Promise<TaskDoc[]> {
   await connectDB()
 
-  const docs = await TaskModel.find({ userId: userName }).sort({ createdAt: -1 }).lean().exec()
+  const docs = await TaskModel.find({ userId: userName }).lean().exec()
+  const tasks = docs.map((doc) => ({ ...doc, _id: String(doc._id) })) as TaskDoc[]
 
-  return docs.map((doc) => ({ ...doc, _id: String(doc._id) })) as TaskDoc[]
+  return tasks.sort(compareTasksByPriorityThenDate)
 }
 
 export async function createTask(input: {
   title: string
   description?: string
+  priority: TaskPriority
   userId: string
 }): Promise<TaskDoc> {
   await connectDB()
@@ -46,13 +52,13 @@ export async function getTaskById(id: string, userName: string): Promise<TaskDoc
 export async function updateTask(
   id: string,
   userName: string,
-  input: { title: string; description?: string }
+  input: { title: string; description?: string; priority: TaskPriority }
 ): Promise<TaskDoc | null> {
   await connectDB()
 
   const doc = await TaskModel.findOneAndUpdate(
     { _id: id, userId: userName },
-    { title: input.title, description: input.description },
+    { title: input.title, description: input.description, priority: input.priority },
     { new: true, lean: true }
   ).exec()
 

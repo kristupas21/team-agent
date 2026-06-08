@@ -1,9 +1,9 @@
 'use server'
 
-import { signIn } from '@/lib/auth'
+import { signIn } from '@/lib/auth/auth'
 import { isRedirectError } from '@/lib/errors'
 import { signInSchema } from '@/lib/validation/signIn'
-import { countUsers } from '@/lib/users'
+import { countUsers } from '@/lib/db/users'
 
 export type SignInResult = { success: true } | { success: false; error: string }
 

@@ -68,4 +68,35 @@ describe('taskSchema', () => {
       expect(parsed.data.description).toBe('some description')
     }
   })
+
+  it('defaults priority to "medium" when omitted', () => {
+    const parsed = taskSchema.safeParse({ title: 'valid title' })
+
+    expect(parsed.success).toBe(true)
+    if (parsed.success) {
+      expect(parsed.data.priority).toBe('medium')
+    }
+  })
+
+  it('rejects an unknown priority value', () => {
+    const parsed = taskSchema.safeParse({ title: 'valid title', priority: 'critical' })
+
+    expect(parsed.success).toBe(false)
+    if (!parsed.success) {
+      const issue = parsed.error.issues.find((i) => i.path[0] === 'priority')
+
+      expect(issue).toBeDefined()
+    }
+  })
+
+  it('accepts each of the four valid priority values', () => {
+    for (const priority of ['urgent', 'high', 'medium', 'low'] as const) {
+      const parsed = taskSchema.safeParse({ title: 'valid title', priority })
+
+      expect(parsed.success).toBe(true)
+      if (parsed.success) {
+        expect(parsed.data.priority).toBe(priority)
+      }
+    }
+  })
 })

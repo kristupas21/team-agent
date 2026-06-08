@@ -1,11 +1,11 @@
 import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import { MongoDBAdapter } from '@auth/mongodb-adapter'
-import { clientPromise } from '@/lib/db'
-import { findUserByName } from '@/lib/users'
-import { verifyPassword } from '@/lib/password'
+import { clientPromise } from '@/lib/db/db'
+import { findUserByName } from '@/lib/db/users'
+import { verifyPassword } from '@/lib/auth/password'
 import { signInSchema } from '@/lib/validation/signIn'
-import { authConfig } from '@/lib/auth.config'
+import { authConfig } from '@/lib/auth/auth.config'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
