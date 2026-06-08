@@ -434,6 +434,23 @@ Execute the full pipeline in order: spec → architect → builder → test → 
 After spec and after architect, pause and show output, then ask "Continue to next agent? (y/n)" before proceeding.
 After reviewer, check `tasks/<name>-review.md` for `## STATUS:`. If FAIL, run fixer automatically, then re-run reviewer. Repeat up to 3 times.
 
+The user can suppress the spec / architect pauses by appending `(skip)` or `(no pauses)` to the run command (e.g. `run agent:all tasks:foo (skip)` or `y (skip)` as a reply). When suppressed, run end-to-end without intermediate confirmation.
+
+**Lite mode for small tasks.**
+Polish, refactor, restructure, fix-only, single-component tweaks, and similar small tasks should produce smaller artifacts. The agents have explicit lite-mode guidance in `agents/*-agent.md`. Trigger lite mode when ANY of these is true:
+- The incoming brief contains "fast", "lite", "polish", "fix", "tweak", or similar tight-scope language.
+- The brief is under ~80 lines AND touches ≤ 3 source files.
+- The brief is a continuation / fix of a prior task (e.g. `task-X-fixes`, `task-X-improvements`).
+
+In lite mode:
+- The spec drops `[OPTIONAL]` sections (Routes / Data / Components / User Interactions / States) entirely.
+- The plan is a short Overview + Files-to-Create + Files-to-Modify + Build-order.
+- The build summary keeps Deviations and Verification; drops "Files NOT Modified" and "Mandatory Test Categories" framing.
+- The test-results file may be a one-line redirect (`See [FEATURE]-build-summary.md → Tests section.`) with content merged into the build summary.
+- The reviewer's PASS output is 10–20 lines and does NOT re-list every AC.
+
+When in doubt: prefer signal over template-filling. A 30-line spec for a polish fix beats a 200-line one that's 70% boilerplate.
+
 **Answering "Open Questions" during a spec-pause.**
 The spec-agent may emit an "Open Questions" section in the spec. At the spec-pause, the user can:
 - Reply `y` — proceed; assumptions stand and the questions remain in the spec as a record.
